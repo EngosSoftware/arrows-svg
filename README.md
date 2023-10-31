@@ -1,4 +1,4 @@
 # SVG arrow generator
 
-![Example](example.svg)
+![Example](./example.svg)
 
