@@ -1,6 +1,13 @@
 [package]
 name = "arrows-svg"
-version = "0.1.1"
+version = "0.0.1"
+authors = ["Dariusz Depta <wisbery@users.noreply.github.com>"]
+description = "SVG arrow generator"
+documentation = "https://docs.rs/arrows-svg"
+repository = "https://github.com/wisbery/arrows-svg.git"
+keywords = ["arrow", "generator", "SVG"]
+categories = ["graphics"]
+license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [dependencies]
