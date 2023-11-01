@@ -5,3 +5,10 @@ version = 3
 [[package]]
 name = "arrows-svg"
 version = "0.1.1"
+dependencies = [
+ "domrs",
+]
+
+[[package]]
+name = "domrs"
+version = "0.0.6"
