@@ -1,66 +1,64 @@
+use domrs::{HtmlDocument, HtmlElement};
 use std::fs;
 
-const HTML_TEMPLATE: &str = include_str!("template.html");
-const SVG_CONTENT: &str = "#SVG_CONTENT#";
 const PI_2: f64 = std::f64::consts::PI * 2.0;
 
 pub fn generate_html(file_name: &str) {
-  let indent = 4;
-  let mut svg = "".to_string();
-  svg.push_str(&svg_begin(400.0, 400.0));
+  let mut svg = create_svg(400.0, 400.0);
 
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 300.0, 300.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 300.0, 230.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 210.0, 300.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 300.0, 300.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 300.0, 230.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 210.0, 300.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 300.0, 100.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 300.0, 190.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 210.0, 10.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 100.0, 300.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 100.0, 210.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 100.0, 100.0));
+  svg.add_child(create_svg_line_with_arrow(200.0, 200.0, 100.0, 10.0));
 
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 300.0, 100.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 300.0, 190.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 210.0, 10.0));
+  let mut body = HtmlElement::new("body");
+  body.add_child(svg);
 
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 100.0, 300.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 100.0, 210.0));
-
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 100.0, 100.0));
-  svg.push_str(&svg_line_with_arrow(indent, 200.0, 200.0, 100.0, 10.0));
-
-  svg.push_str(svg_end());
-  fs::write(file_name, HTML_TEMPLATE.replace(SVG_CONTENT, &svg)).expect("writing HTML file failed");
+  let doc = HtmlDocument::new("Arrows", "en", &[], body);
+  fs::write(file_name, doc.to_string()).expect("writing HTML file failed");
 }
 
-/// Returns `<svg>` element.
-fn svg_begin(width: f64, height: f64) -> String {
-  format!(r#"<svg width="{}" height="{}">{}"#, width, height, '\n')
+fn create_svg(width: f64, height: f64) -> HtmlElement {
+  let mut svg = HtmlElement::new("svg");
+  svg.set_attr("width", width);
+  svg.set_attr("height", height);
+  svg
 }
 
-/// Returns `</svg>` element.
-fn svg_end() -> &'static str {
-  "</svg>\n"
+fn create_svg_line(x1: f64, y1: f64, x2: f64, y2: f64) -> HtmlElement {
+  let mut line = HtmlElement::new("line");
+  line.set_attr("x1", x1);
+  line.set_attr("y1", y1);
+  line.set_attr("x2", x2);
+  line.set_attr("y2", y2);
+  line.set_attr("stroke", "black");
+  line.set_attr("stroke-width", "1");
+  line
 }
 
-fn svg_line(indent: usize, x1: f64, y1: f64, x2: f64, y2: f64) -> String {
-  format!(r#"{:i$}<line x1="{}" y1="{}" x2="{}" y2="{}"/>{}"#, "", x1, y1, x2, y2, '\n', i = indent)
+fn create_svg_arrow(x2: f64, y2: f64) -> HtmlElement {
+  let mut path = HtmlElement::new("path");
+  path.set_attr("d", format!("M {} {} l 10 -3 l 0 6 l -10 -3", x2, y2));
+  path.set_attr("fill", "black");
+  path.set_attr("stroke-linecap", "round");
+  path
 }
 
-fn svg_arrow(indent: usize, x2: f64, y2: f64) -> String {
-  format!(
-    r#"{:i$}<path d="M {} {} l 10 -3 l 0 6 l -10 -3" fill="black" stroke-linecap="round"/>{}"#,
-    "",
-    x2,
-    y2,
-    '\n',
-    i = indent
-  )
-}
-
-/// Returns line.
-fn svg_line_with_arrow(indent: usize, x1: f64, y1: f64, x2: f64, y2: f64) -> String {
-  let mut content = "".to_string();
-  content.push_str(&svg_line(indent, x1, y1, x2, y2));
+fn create_svg_line_with_arrow(x1: f64, y1: f64, x2: f64, y2: f64) -> HtmlElement {
+  let mut sub_group = HtmlElement::new("g");
   let a = rotation(x1, y1, x2, y2);
-  content.push_str(&format!(r#"{:i$}<g transform="rotate({} {} {})">{}"#, "", a, x2, y2, '\n', i = indent));
-  content.push_str(&svg_arrow(indent + 4, x2, y2));
-  content.push_str(&format!(r#"{:i$}</g>{}"#, "", '\n', i = indent));
-  content
+  sub_group.set_attr("transform", format!("rotate({} {} {})", a, x2, y2));
+  sub_group.add_child(create_svg_arrow(x2, y2));
+  let mut group = HtmlElement::new("g");
+  group.add_child(create_svg_line(x1, y1, x2, y2));
+  group.add_child(sub_group);
+  group
 }
 
 fn rotation(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
