@@ -1,3 +1,3 @@
 # SVG arrow generator
 
-![Example](e1.svg)
+![Example](examples/e1.svg)
