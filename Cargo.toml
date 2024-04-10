@@ -1,10 +1,10 @@
 [package]
 name = "arrows-svg"
-version = "0.0.1"
-authors = ["Dariusz Depta <wisbery@users.noreply.github.com>"]
+version = "1.0.0"
+authors = ["Dariusz Depta <dariusz.depta@engos.software>"]
 description = "SVG arrow generator"
 documentation = "https://docs.rs/arrows-svg"
-repository = "https://github.com/wisbery/arrows-svg.git"
+repository = "https://github.com/EngosSoftware/arrows-svg.git"
 keywords = ["arrow", "generator", "SVG"]
 categories = ["graphics"]
 license = "MIT OR Apache-2.0"
